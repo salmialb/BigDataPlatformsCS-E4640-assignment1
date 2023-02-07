@@ -1,0 +1,47 @@
+version: '3.4'
+x-cassandra: &cassandras
+  CASSANDRA_CLUSTER_NAME: tutorials
+  CASSANDRA_SEEDS: cassandra1
+  HEAP_NEWSIZE: 1M
+  MAX_HEAP_SIZE: 512M
+  CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
+    
+x-expose: &exposes
+    - "7000" # intra-node communication
+    - "7001" # TLS intra node communication
+    - "7199" # JMX
+    - "9042" # CQL
+    - "9142" # CQL TLS
+    - "9160" # Thrift
+services: 
+  cassandra-node1:
+    image: bitnami/cassandra:latest
+   # volumes:
+   #   - ./init-scripts:/docker-entrypoint-initdb.d
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2,cassandra-node3
+      - CASSANDRA_DATACENTER=datacenter1
+
+  cassandra-node2:
+    image: bitnami/cassandra:latest
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2,cassandra-node3
+      - CASSANDRA_DATACENTER=datacenter1
+
+  cassandra-node3:
+    image: bitnami/cassandra:latest
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2,cassandra-node3
+      - CASSANDRA_DATACENTER=datacenter1
+
+  web-app:
+    build: .
+    environment:
+      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2,cassandra-node3
+    ports:
+      - 5555:5555
+    depends_on:
+      - cassandra-node1

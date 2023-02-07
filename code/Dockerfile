@@ -1,6 +1,11 @@
-FROM python:3.8
-COPY . /app
+FROM python:3.9
+
 WORKDIR /app
-RUN pip install -r requirements.txt
-EXPOSE 5000
+
+COPY requirements.txt .
+
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY mysimbdp-daas.py .
+COPY setupDB.py .
 CMD ["python", "mysimbdp-daas.py"]
