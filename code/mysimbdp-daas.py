@@ -1,10 +1,21 @@
 from flask import Flask, request
 from cassandra.cluster import Cluster
+from cassandra.query import BatchStatement
 from cassandra.auth import PlainTextAuthProvider
+from cassandra.query import SimpleStatement
+from concurrent.futures import ThreadPoolExecutor
+import setupDB
+
+
 import socket
 import csv
 import os
+import logging
+import math
+from datetime import datetime
 app = Flask(__name__)
+logging.basicConfig(level=logging.INFO)
+
 def isOpen(ip, port):
    test = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
    try:
@@ -58,19 +69,42 @@ def get_data():
 @app.route('/store_csv', methods=['POST'])
 def store_csv():
     session, cluster =  cassandra_connection()
+    setupDB.cassandra_create_tables(session, cluster)
+
+    batch = BatchStatement()
+    logging.info("Ingesting file into DB...")
+
     file = request.files['file']
     file.save('data.csv')
     with open('data.csv', 'r') as f:
         reader = csv.reader(f)
         header = next(reader)
-        # read the rows in the csv file and store them in Cassandra
-        for row in reader:
-            # insert the data into Cassandra using CQL
-            session.execute("INSERT INTO mysimbdp_coredms.covid ({}) VALUES ({})".format(','.join(header), ','.join(row)))
-    return 'CSV file stored successfully'
-import setupDB
+        header = [x.lower() for x in header]
 
-@app.route('/init_db', methods=['GET'])
+        # read the rows in the csv file and store them in Cassandra
+        i=0
+        for row in reader:
+          
+            # insert the data into Cassandra using CQL
+            #Transform the date format to be work
+            row[0] = "'"+datetime.strptime(row[0], '%d/%m/%Y').strftime('%Y-%m-%d')+"'"
+            row[6] = "'"+row[6]+"'"
+            row[7] = "'"+row[7]+"'"
+            row[8] = "'"+row[8]+"'"
+            row[10] = "'"+row[10]+"'"
+            for i in range(len(row)):
+                if not row[i]:
+                    row[i] = "0"
+
+            batch.add(session.prepare("INSERT INTO mysimbdp_coredms.covid ({}) VALUES ({})".format(','.join(header), ','.join(row))))
+            i = i+1
+            #session.execute("INSERT INTO mysimbdp_coredms.covid ({}) VALUES ({})".format(','.join(header), ','.join(row)))
+            if i>= 50:
+                i=0
+                session.execute(batch)
+    return 'CSV file stored successfully'
+
+
 def init_db():
     session,cluster = cassandra_connection()
     result = setupDB.cassandra_create_tables(session, cluster)
@@ -81,5 +115,5 @@ def init_db():
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5555)
-
-    ##TODO: Use pandas to transform date column into yyyy-mm-dd. Currently is dd/mm/yy
+    init_db()
+    ##TODO: prepared statements + async

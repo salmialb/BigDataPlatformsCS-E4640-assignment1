@@ -38,21 +38,21 @@ def cassandra_connection(ips):
     return session, cluster
 def cassandra_create_tables(session,cluster):
     
-    session.execute("DROP TABLE IF EXISTS covid")
     create_table =  "CREATE TABLE IF NOT EXISTS covid "\
-                    "(date date"\
+                    "(dateRep date"\
                     ", day int" \
                     ", month int"\
                     ", year int"\
+                    ", cases int"\
                     ", deaths int"\
                     ", countriesAndTerritories text"\
                     ", geoId text"\
                     ", countryterritoryCode text"\
                     ", popData2019 int"\
-                    ", continent text" \
-                    ", cumulative_number_for_14_days_of_COVID_19_cases_per_100000 float"\
-                    ", PRIMARY KEY(date))"
-    logging.info("Creating table")
+                    ", continentExp text" \
+                    ", Cumulative_number_for_14_days_of_COVID19_cases_per_100000 float"\
+                    ", PRIMARY KEY(dateRep))"
+    logging.info("Creating table...")
     session.execute(create_table)
     result = session.execute("SELECT * FROM mysimbdp_coredms.covid")
     print(result)
