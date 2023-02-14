@@ -6,6 +6,7 @@ import certifi
 import logging
 import requests
 import logging
+import json
 def parse_args():
     parser = argparse.ArgumentParser()
     parser.add_argument('--mode', type=str, default='default', help='Set execution mode. "tests" will execute tests with multiple tenants')
@@ -18,7 +19,7 @@ def insert_data(csv):
     
 
     start_time = time.time()
-    with open(csv, 'r') as f:
+    with open(csv, 'r', encoding='utf8') as f:
         r = requests.post('http://localhost:5000/ingestion', files={'file': f})
 
     end_time = time.time()
@@ -30,8 +31,7 @@ if __name__ == '__main__':
         insert_data(csv)
         
     if args.mode == "tests":
-            #Smaller file for less waiting
-            csv = "..\data/data-small.csv"
+            csv = "..\data/ruuvitag-20180513T000000Z.csv"
 
             #The number of tenants for the test
             num_tenants = args.num_tenants

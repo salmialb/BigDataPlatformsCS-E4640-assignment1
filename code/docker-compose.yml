@@ -13,7 +13,7 @@ services:
         - 27017:27017
       expose:
         - 27017
-      command: mongod --replSet rs0 
+      command: mongod  --replSet rs0 
       hostname: mongodb1
       volumes:
         - mongodb1:/data/db
@@ -33,7 +33,7 @@ services:
       - 27019:27017
     expose:
         - 27017
-    command: mongod --replSet rs0 
+    command: mongod  --replSet rs0 
     hostname: mongodb3
     volumes:
       - mongodb3:/data/db

@@ -2,6 +2,8 @@ from flask import Flask, jsonify, request
 import pymongo
 from pymongo import MongoClient
 import csv,logging
+import pandas as pd
+import json
 app = Flask(__name__)
 
 def get_db():
@@ -20,17 +22,19 @@ def insert_data():
 
 @app.route('/ingestion', methods=['POST'])
 def ingestion():
+
     db = get_db()
-    coll = db['covid_data']
+    coll = db['tortoise_data']
     file = request.files['file']
     file.save('data.csv')
-    with open("data.csv", "r") as file:
-        reader = csv.DictReader(file)
+    data = pd.read_csv("data.csv")
+   # with open("data.csv", "r") as file:
+    #    reader = csv.DictReader(file, dialect = 'excel')
         
         # Insert each row into MongoDB
 
-        for row in reader:
-            coll.insert_one(row)
+        #coll.insert_many(reader)   #for row in reader:
+    coll.insert_many(data.to_dict('records'))
           
  
         
