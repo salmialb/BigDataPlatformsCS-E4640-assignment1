@@ -1,47 +1,44 @@
-version: '3.4'
-x-cassandra: &cassandras
-  CASSANDRA_CLUSTER_NAME: tutorials
-  CASSANDRA_SEEDS: cassandra1
-  HEAP_NEWSIZE: 1M
-  MAX_HEAP_SIZE: 512M
-  CASSANDRA_ENDPOINT_SNITCH: GossipingPropertyFileSnitch
-    
-x-expose: &exposes
-    - "7000" # intra-node communication
-    - "7001" # TLS intra node communication
-    - "7199" # JMX
-    - "9042" # CQL
-    - "9142" # CQL TLS
-    - "9160" # Thrift
-services: 
-  cassandra-node1:
-    image: bitnami/cassandra:latest
-   # volumes:
-   #   - ./init-scripts:/docker-entrypoint-initdb.d
-    environment:
-      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
-      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2,cassandra-node3
-      - CASSANDRA_DATACENTER=datacenter1
 
-  cassandra-node2:
-    image: bitnami/cassandra:latest
-    environment:
-      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
-      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2,cassandra-node3
-      - CASSANDRA_DATACENTER=datacenter1
-
-  cassandra-node3:
-    image: bitnami/cassandra:latest
-    environment:
-      - CASSANDRA_CLUSTER_NAME=cassandra-cluster
-      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2,cassandra-node3
-      - CASSANDRA_DATACENTER=datacenter1
-
-  web-app:
+services:
+  app:
     build: .
-    environment:
-      - CASSANDRA_SEEDS=cassandra-node1,cassandra-node2,cassandra-node3
+    command: python -u mysimbdp-dataingest.py
     ports:
-      - 5555:5555
-    depends_on:
-      - cassandra-node1
+      - "5000:5000"
+    volumes:
+      - .:/app
+  mongodb1:
+      image: mongo:4.2.8
+      ports:
+        - 27017:27017
+      expose:
+        - 27017
+      command: mongod --replSet rs0 
+      hostname: mongodb1
+      volumes:
+        - mongodb1:/data/db
+  mongodb2:
+    image: mongo:4.2.8
+    ports:
+      - 27018:27017
+    expose:
+        - 27017
+    command: mongod --replSet rs0 
+    hostname: mongodb2
+    volumes:
+      - mongodb2:/data/db
+  mongodb3:
+    image: mongo:4.2.8
+    ports:
+      - 27019:27017
+    expose:
+        - 27017
+    command: mongod --replSet rs0 
+    hostname: mongodb3
+    volumes:
+      - mongodb3:/data/db
+
+volumes:
+  mongodb1:
+  mongodb2:
+  mongodb3:
