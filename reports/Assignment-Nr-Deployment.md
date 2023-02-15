@@ -17,4 +17,4 @@ It is a free form. you can use it to explain how to deploy/install and run  your
     ]
     })
 8. in a new terminal run  "python tests_multiple_tenants.py" to ingest the data
-9. to have multiple tenants ingesting at once run  "python tests_multiple_tenants.py --mode tests --num_tenants n"  where n is the number of tenants you want simultaneously ingesting data.
+9. to have multiple tenants ingesting at once run  "python ingestion_client.py --mode tests --num_tenants n"  where n is the number of tenants you want simultaneously ingesting data.

@@ -15,7 +15,6 @@ def parse_args():
 args = parse_args()
 
 def insert_data(csv):
-   # coll = db["tests"]
     
 
     start_time = time.time()
@@ -23,7 +22,6 @@ def insert_data(csv):
         r = requests.post('http://localhost:5000/ingestion', files={'file': f})
 
     end_time = time.time()
-   # print(f"Tenant {tenant_id} took {end_time - start_time} seconds to insert the file records")
 if __name__ == '__main__':
     if args.mode == "default":
         print("Inserting data...")
@@ -36,21 +34,23 @@ if __name__ == '__main__':
             #The number of tenants for the test
             num_tenants = args.num_tenants
 
-            print(f"Initiating tests for {num_tenants} tenants...")
+            #print(f"Initiating tests for {num_tenants} tenants...")
             # Create N processes, each simulating a tenant injecting data
             start_time = time.time()
             processes = []
-            for i in range(num_tenants):
-                process = Process(target=insert_data,args=(csv,))
-                processes.append(process)
+            for j in range(1, num_tenants,2):
+                print(f"Initiating tests for {j} tenants...")
+                for i in range(j):
+                    process = Process(target=insert_data,args=(csv,))
+                    processes.append(process)
 
-            # Start all processes
-            for process in processes:
-                process.start()
+                # Start all processes
+                for process in processes:
+                    process.start()
 
-            # Wait for all processes to finish
-            for process in processes:
-                process.join()
-            end_time = time.time()
-            print(f"It took {end_time-start_time} seconds for {num_tenants} tenants to insert their files. ")
-#TODO: sharding
+                # Wait for all processes to finish
+                for process in processes:
+                    process.join()
+                processes.clear()
+                end_time = time.time()
+                print(f"It took {end_time-start_time} seconds for {j} tenants to insert their files. ")
