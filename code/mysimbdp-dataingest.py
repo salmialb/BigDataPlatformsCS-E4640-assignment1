@@ -7,9 +7,7 @@ import json
 app = Flask(__name__)
 
 def get_db():
-    client = MongoClient(
-    host = "mongodb1",port=27017
-    )
+    client = MongoClient("mongodb://router-01:27017/assignment1"   )
     db = client["assignment1"]
     return db
 

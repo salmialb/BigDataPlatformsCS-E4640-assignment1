@@ -49,15 +49,20 @@ Use of Caching: To improve the performance of mysimbdp, you can use a caching me
 Note that I'm not going to be implementing all of these since just isn't feasible for a school project given the constraints and my time limitation.
 
 # Part 2
-    { "_id" : ObjectId("63ec9d5b300c718f113f449e"),\
-        "time" : NumberLong("1526083320375"),\
-        "readable_time" : "2018-05-12T00:02:00.375000Z",\
-        "acceleration" : 1014.6920715172656,\
-        "acceleration_x" : -68, \
-        "acceleration_y" : 376,\
-        "acceleration_z" : 940,\
-        "battery" : 2941, \
-        "humidity" : 33, \
-        "pressure" : 1023.59,\
-        "temperature" : 23.67, \
-        "dev-id" : "C2:9A:9F:E5:58:27" }\
+## Question 1
+    { "_id" : ObjectId("63ec9d5b300c718f113f449e"),
+        "time" : NumberLong("1526083320375"),
+        "readable_time" : "2018-05-12T00:02:00.375000Z",
+        "acceleration" : 1014.6920715172656,
+        "acceleration_x" : -68, 
+        "acceleration_y" : 376,
+        "acceleration_z" : 940,
+        "battery" : 2941, 
+        "humidity" : 33, 
+        "pressure" : 1023.59,
+        "temperature" : 23.67, 
+        "dev-id" : "C2:9A:9F:E5:58:27" }
+## Question 2
+For data partitioning/sharding, a good strategy could be to partition the data based on the unique device identifier, as each device would likely have a different rate of data generation and different access patterns. This would allow for more efficient querying and data retrieval, as well as potentially improving data regulation by keeping data from different devices separate.
+
+For replication, I'm doing a master-slave replication setup, where one node is designated as the master and all writes are directed to it. The master then replicates the writes to the slave nodes, which can handle read requests. This approach provides improved fault tolerance and availability, as well as  improves data consistency by ensuring that all nodes have the same data.

@@ -25,7 +25,7 @@ def insert_data(csv):
 if __name__ == '__main__':
     if args.mode == "default":
         print("Inserting data...")
-        csv = "..\data/data.csv"
+        csv = "..\data/ruuvitag-20180513T000000Z.csv"
         insert_data(csv)
         
     if args.mode == "tests":
