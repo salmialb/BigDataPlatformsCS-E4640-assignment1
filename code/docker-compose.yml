@@ -2,11 +2,12 @@
 services:
   app:
     build: .
-    command: python -u mysimbdp-dataingest.py
+    command: python -u mysimbdp-daas.py
     ports:
       - "5000:5000"
     volumes:
       - .:/app
+##Check references for info on where I got this nice setup for sharding      
 ## Router
   router01:
     image: mongo:6.0.1
@@ -78,7 +79,6 @@ services:
 
 ## Shards
   ## Shards 01
-   
   shard01-a:
     image: mongo:6.0.1
     container_name: shard-01-node-a
