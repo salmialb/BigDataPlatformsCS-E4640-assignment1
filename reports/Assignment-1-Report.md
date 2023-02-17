@@ -3,28 +3,28 @@
 ## 1. Explain your choice of the application domain and corresponding types of data to be supported and technologies for mysimbdp-coredms. Explain under which situations/assumptions, your platform serves for big data workload 
 The application domain for mysimbdp-coredms is big data storage and management. The types of data to be supported can vary widely since I am using a NoSQL database, including structured and unstructured data, as well as text, images, and multimedia data. For the project I am only using one dataset -> one type of data as instructed.
 
-For this platform, the technologies used are a Flask API and MongoDB. Flask is used for building the API for data ingestion, and MongoDB is used for storing and managing the data. A replica set cluster is used for high availability and to ensure that data is always available, even if a single node goes down.
+For this platform, the technologies used are a Flask API and MongoDB. Flask is used for building the API for data insertion, and MongoDB is used for storing and managing the data. A replica set cluster is used for high availability and to ensure that data is always available, even if a single node goes down.
 
 This platform is well-suited for big data workloads under the following situations/assumptions:
 
     High data volume: The platform can handle large amounts of data and could potentially scale to meet the demands of a growing business.
-    High data velocity: The platform can handle fast data ingestion rates, making it suitable for real-time and near real-time data processing.
+    High data velocity: The platform can handle fast data ingestion rates, making it suitable for real-time and near real-time data processing.  (Especially with better hardware/ hosted in the cloud)
     High data variety: The platform can store and manage a wide range of data types, including structured, semi-structured, and unstructured data.
     High data variability: The platform can handle rapidly changing data and adapt to changing data patterns.
 
 ## 2. Design and explain the interactions among main platform components in your architecture of mysimbdp. Explain which would be the third parties (services/infrastructures) that you do not develop for your platform. 
-mysimbdp-dataingest: This component reads data from external data sources and then passes the data to the mysimbdp-coredms component using APIs.
-mysimbdp-coredms: This component acts as the main storage for the platform. It receives data from mysimbdp-dataingest, stores it, and makes it available to other components in the platform through APIs.
-mysimbdp-daas: This component acts as an intermediary between external data consumers and mysimbdp-coredms. It exposes APIs that allow external data consumers to access the data stored in mysimbdp-coredms.
+    mysimbdp-dataingest: This component reads data from external data sources and then passes the data to the mysimbdp-coredms component using mysimbdp-daas.
+    mysimbdp-coredms: This component acts as the main storage for the platform. It receives data from mysimbdp-daas, stores it, and makes it available to other components in the platform through APIs.
+    mysimbdp-daas: This component acts as a middle man between external data consumers and mysimbdp-coredms. It exposes APIs that allow external data consumers to access and ingest the data stored in mysimbdp-coredms.
 
-In terms of third-party services and infrastructures, mysimbdp will rely on external data sources for data ingestion and storage. Some common data sources can include file systems, databases, messaging systems, and cloud storage services. Additionally, mysimbdp may rely on third-party tools for data processing and analysis, such as Apache Spark or Apache Hadoop.
+In terms of third-party services and infrastructures, mysimbdp will rely on external data sources for data ingestion and storage. Some common data sources can include file systems, databases, messaging systems, and cloud storage services. Additionally, mysimbdp could leverage on third-party tools for data processing and analysis, such as Apache Spark or Apache Hadoop but that's outside the assignment scope.
 ##  3. Explain a configuration of a cluster of nodes for mysimbdp-coredms so that you prevent a single-point-of-failure problem for mysimbdp-coredms for your tenants 
-To prevent single-point-of-failure I set up a clster of nodes using replicasets in MongoDB. Replica sets provide automatic failover by maintaining multiple copies of data across multiple nodes, ensuring that if one node fails, the data remains available. I developed my project to work locally. In a real world scenario this would not be optimal and you would want to spread out the nodes on different machines.
+To prevent single-point-of-failure I set up a cluster of nodes using replicasets in MongoDB. Replica sets provide automatic failover by maintaining multiple copies of data across multiple nodes, ensuring that if one node fails, the data remains available. I developed my project to work locally. In a real world scenario this would not be optimal and you would want to spread out the nodes on different machines since if they are all on one machine they all fail if the machine fails.
 ##  4. You decide a pre-defined level of data replication for your tenants/customers. Explain the level of replication in your design, how many nodes are needed in the deployment of mysimbdp-coredms for your choice so that this component can work property (e.g., the system still supports redundancy in the case of a failure of a node
 My configuration is as follows:
-1. One primary node responsible for handling all write operations
-2. Two secondary nodes that maintain a copy of the data from the primary node and are available to handle read operationd and take over if the primary node fails.
-
+1. One primary shard responsible for handling all write operations
+2. Two secondary shards that maintain a copy of the data from the primary node and are available to handle read operations and take over if the primary node fails.
+3. The same setup inside the shards with nodes instead.
 ## 5.  Explain how would you scale mysimbdp to allow many tenants using mysimbdp-dataingest to push data into mysimbdp
 I opted to solve this by using a REST API which acts as a middleman forwarding the requests. I go more into detail on how scaling could be done in part 2 question 5.
 
@@ -68,6 +68,10 @@ Below is a chart depicting test results on how long it takes for n tenants to si
 ![image info](./figures/test-results.png)
 
 There seems to be a noticeable drop in performance as shards are removed. More statistics can be seen by setting up monitoring as instructed in deployment.
+
+![image info](./figures/monitordemo.png)
+
+Example of how the monitor tool looks like under load with multiple tenants simultaneously ingesting data.
 
 ## 5. Observing the performance and failure problems when you push a lot of data into mysimbdp-coredms (you do not need to worry about duplicated data in mysimbdp), propose the change of your deployment to avoid such problems (or explain why you do not have any problem with your deployment)
 When ingesting a lot of data using many tenants at once the performace of the system degrades. Notably it becomes very slow. The issue could be solved via two main options:

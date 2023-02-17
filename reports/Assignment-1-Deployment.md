@@ -1,7 +1,7 @@
 # This is a deployment/installation guide
 
  ## 1. open up a terminal and cd to the code folder and run:
-    
+    cd code
     docker-compose up -d
 ## this will start up the mysimbdp-coredms & mysimbdp-dataingest components.
     
@@ -13,7 +13,7 @@
     docker-compose exec shard02-a sh -c "mongosh < /scripts/init-shard02.js"
     docker-compose exec shard03-a sh -c "mongosh < /scripts/init-shard03.js"
         
-## 3. Initialize the router(might need to wait a bit after the previous command):
+## 3. Initialize the router(might need to wait a few seconds after the previous command):
     docker-compose exec router01 sh -c "mongosh < /scripts/init-router.js"
 
 ## 5. Config sharding: 
@@ -48,3 +48,5 @@
     db.adminCommand( { removeShard: "rs-shard-02" } )
 
     (This drops the 2nd shard for example)
+## 10. Connecting with MongoDBCompass
+    mongodb://127.0.0.1:27117,127.0.0.1:27118/

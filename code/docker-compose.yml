@@ -234,3 +234,6 @@ volumes:
   
   mongodb_cluster_shard03_c_db:
   mongodb_cluster_shard03_c_config:
+
+#https://github.com/minhhungit/mongodb-cluster-docker-compose 
+#LICENSE: https://github.com/minhhungit/mongodb-cluster-docker-compose/blob/master/LICENSE
