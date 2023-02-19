@@ -2,7 +2,7 @@
 
 
 This is my submission for the first assignment in the course Big Data Platforms (Aalto CS-E4640).
-The project can be ran 100% locally using docker & docker-compose.
+The project can be ran locally using docker & docker-compose.
 
 ## Contents of repository:
 ### Code folder
