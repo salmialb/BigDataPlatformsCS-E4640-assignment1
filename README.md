@@ -1,4 +1,4 @@
-# Assignment 1  100499799
+# 
 
 
 This is my submission for the first assignment in the course Big Data Platforms (Aalto CS-E4640).
